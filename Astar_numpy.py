@@ -78,7 +78,7 @@ class Astar:
                 if x==target_point[0] and y==target_point[1]:
                     found=True
                     self.realcost=cell[0][0]
-                    print(cell)
+                    #print(cell)
                 else:
                     for i in range(len(delta)):#计算周围四个坐标参数
                         x_new=x+delta[i][0]#x坐标跟新
