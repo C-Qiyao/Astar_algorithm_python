@@ -7,7 +7,6 @@
 #https://gitee.com/C-Qiyao/astar-algorithm-py
 from PIL import Image
 import numpy as np
-from responses import target
 import matplotlib.pyplot as plt
 import time
 
@@ -23,7 +22,7 @@ def read_img(filename):
             table.append(0)
 
     photo = Img.point(table, '1')
-    imag=np.array(photo,dtype=int)
+    imag=np.array(photo,dtype=np.int)
     return imag
 
 
@@ -31,7 +30,7 @@ def read_img(filename):
 
 class Astar:
     def __init__(self,grid):
-        self.grid=np.array(grid,dtype=np.int32)
+        self.grid=np.array(grid,dtype=np.int0)
         print('Imput Grid:\n',self.grid)
         self.found = False  # 到达标记
         self.resign = False  # 启动标记
@@ -63,7 +62,6 @@ class Astar:
         assert(self.grid[self.begin_point[0]][self.begin_point[1]]!=1)and(self.grid[self.target_point[0]][self.target_point[1]]!=1)
         #检查起点和终点是不是在障碍物区内
         target_point=self.target_point
-        heuristic=self.heuristic
         delta=self.delta
         close_matrix= np.zeros(self.shape,dtype=np.int32)#生成与grid同大小的0矩阵,用来保存周围坐标
         action_matrix= np.zeros(self.shape,dtype=np.int32)#生成与grid同大小的0矩阵，用来保存已经计算过的点
@@ -71,15 +69,14 @@ class Astar:
         #计算H-cost
         for i in range(self.H):#逐个计算与终点的距离值
             for j in range(self.W):
-                heuristic[i][j] = abs(i - target_point[0]) + abs(j - target_point[1])
+                self.heuristic[i][j] = abs(i - target_point[0]) + abs(j - target_point[1])
                 if grid[i][j] == 1:#如果遇到障碍，默认给一个巨大的值，让他不可取
-                    heuristic[i][j] = 999
-        self.heuristic=heuristic  
+                    self.heuristic[i][j] = 999 
         print('H-coat Grid:\n',self.heuristic)
         x = self.begin_point[0]
         y = self.begin_point[1]
         g = 0
-        f = g + heuristic[self.begin_point[0]][self.begin_point[1]]
+        f = g + self.heuristic[self.begin_point[0]][self.begin_point[1]]
         cell = np.array([[f, g, x, y]],dtype=np.int32)
         print(cell)
 
@@ -115,7 +112,7 @@ class Astar:
                         if self.x_y_inrange(x_new,y_new):
                             if close_matrix[x_new][y_new]==0 and self.grid[x_new][y_new]==0:
                                 g_new=g+self.cost
-                                f_new=g_new+heuristic[x_new][y_new]
+                                f_new=g_new+self.heuristic[x_new][y_new]
                                 c_new=np.array([[f_new,g_new,x_new,y_new]],dtype=np.int32)
                                 #print('STEPS=',steps,'xnew=',x_new,'ynew=',y_new)
                                 cell=np.r_[cell,c_new]#numpy数组中加入新的点位信息
