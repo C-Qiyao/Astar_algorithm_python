@@ -1,14 +1,34 @@
 #A*算法是一个最优路径查找的算法
 #可以根据不同动作的损失来找到达到目标最近的方法
 #本算法目前就考虑了路径的上下左右移动，尚未涉及斜对角移动
-#版本说明 V1.0
+#版本说明 V1.1
 #日期   2022/5/13
 #作者   Qiyao
 #https://gitee.com/C-Qiyao/astar-algorithm-py
-
+from PIL import Image
 import numpy as np
 from responses import target
 import matplotlib.pyplot as plt
+import time
+
+def read_img(filename):
+    im=Image.open(filename)
+    Img = im.convert('L')
+    threshold = 200
+    table = []
+    for i in range(256):
+        if i < threshold:
+            table.append(1)
+        else:
+            table.append(0)
+
+    photo = Img.point(table, '1')
+    imag=np.array(photo,dtype=int)
+    return imag
+
+
+
+
 class Astar:
     def __init__(self,grid):
         self.grid=np.array(grid,dtype=np.int32)
@@ -97,7 +117,7 @@ class Astar:
                                 g_new=g+self.cost
                                 f_new=g_new+heuristic[x_new][y_new]
                                 c_new=np.array([[f_new,g_new,x_new,y_new]],dtype=np.int32)
-                                print('STEPS=',steps,'xnew=',x_new,'ynew=',y_new)
+                                #print('STEPS=',steps,'xnew=',x_new,'ynew=',y_new)
                                 cell=np.r_[cell,c_new]#numpy数组中加入新的点位信息
                                 #print('new cell\n',cell)
                                 close_matrix[x_new][y_new]=1
@@ -132,7 +152,7 @@ class Astar:
 
 if __name__ == "__main__":
     #grid为地图矩阵，其中1为障碍物，0表示空旷
-    grid = [
+    '''grid = [
        [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
        [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0],
        [0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0],
@@ -142,15 +162,18 @@ if __name__ == "__main__":
        [0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
        [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
        [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0],
-       [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0]]
-    
+       [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0]]'''
+    grid= read_img('mig2.png')
     #生成算法实例对象
     k=Astar(grid)
     #设置路径起点
     k.set_start(9,0)
     #设置目标终点
-    k.set_target(9,28)
+    #k.set_target(1100,1788)
+    k.set_target(140,290)
     #计算路径
+    start=time.time()
     k.calculate()
+    end=time.time()
     #矩阵绘制显示
-    k.show_mat('Path Output,STEPS='+str(k.steps)+'    COST='+str(k.realcost))
+    k.show_mat('Path Output,STEPS='+str(k.steps)+'    COST='+str(k.realcost)+'   Time cost='+str(round((end-start),3))+'s')
