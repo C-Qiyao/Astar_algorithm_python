@@ -57,7 +57,7 @@ class Astar:
 
         found = False  # 到达标记
         resign = False  # 启动标记
-
+        steps=0
         while not found and not resign:
             if len(cell)==0:
                 resign=True
@@ -91,9 +91,12 @@ class Astar:
                                 #print('new cell\n',cell)
                                 close_matrix[x_new][y_new]=1
                                 action_matrix[x_new][y_new]=i
+                steps+=1
         path=np.array([[target_point[0],target_point[1]]],dtype=np.int32)
         x=target_point[0]
         y=target_point[1]
+        
+        self.steps=steps
         #开始根据action回溯路径
         while x!=self.begin_point[0] or y!=self.begin_point[1]:
             x_pre=x-delta[action_matrix[x][y]][0]
@@ -103,7 +106,7 @@ class Astar:
             grid_copy[x][y]=5#黄色
             path=np.r_[[[x,y]],path]
         self.path=path
-        grid_copy[grid_copy==1]=8#障碍物颜色
+        grid_copy[grid_copy==1]=10#障碍物颜色
         self.path_grid=grid_copy
         print('path is :\n',path)
         print(grid_copy)
@@ -137,4 +140,4 @@ if __name__ == "__main__":
     k.set_start(9,0)
     k.set_target(9,28)
     k.calculate()
-    k.show_mat('path mat')
+    k.show_mat('Path Output,STEPS='+str(k.steps))
