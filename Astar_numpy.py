@@ -1,3 +1,11 @@
+#A*算法是一个最优路径查找的算法
+#可以根据不同动作的损失来找到达到目标最近的方法
+#本算法目前就考虑了路径的上下左右移动，尚未涉及斜对角移动
+#版本说明 V1.0
+#日期   2022/5/13
+#作者   Qiyao
+#https://gitee.com/C-Qiyao/astar-algorithm-py
+
 import numpy as np
 from responses import target
 import matplotlib.pyplot as plt
