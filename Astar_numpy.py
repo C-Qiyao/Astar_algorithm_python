@@ -59,6 +59,7 @@ class Astar:
             return False
 
     def calculate(self):
+        self.arrive_point=np.zeros(self.shape,dtype=np.int32)
         assert(self.grid[self.begin_point[0]][self.begin_point[1]]!=1)and(self.grid[self.target_point[0]][self.target_point[1]]!=1)
         #检查起点和终点是不是在障碍物区内
         self.start=time.time()
@@ -70,7 +71,7 @@ class Astar:
             for j in range(self.W):
                 self.heuristic[i][j] = abs(i - target_point[0]) + abs(j - target_point[1])
                 if grid[i][j] == 1:#如果遇到障碍，默认给一个巨大的值，让他不可取
-                    self.heuristic[i][j] = 999 
+                    self.heuristic[i][j] = 999999 
         print('H-coat Grid:\n',self.heuristic)
         x = self.begin_point[0]
         y = self.begin_point[1]
@@ -107,6 +108,7 @@ class Astar:
                     for i in range(len(delta)):#计算周围四个坐标参数
                         x_new=x+delta[i][0]#x坐标跟新
                         y_new=y+delta[i][1]#y坐标跟新
+                        self.arrive_point[x][y]=10
                         #判断新坐标合法性
                         if self.x_y_inrange(x_new,y_new):
                             if self.close_matrix[x_new][y_new]==0 and self.grid[x_new][y_new]==0:
@@ -136,12 +138,14 @@ class Astar:
         self.end=time.time()
         self.path=path
         grid_copy[grid_copy==1]=5#障碍物颜色
-        self.path_grid=grid_copy
+        self.path_grid=grid_copy+self.arrive_point
+        
 
-    def show_mat(self,title):
-        plt.matshow(self.path_grid)
+    def show_mat(self,title,mat):
+        plt.matshow(mat)
         plt.title(title)
         plt.show()
+
 
 
 
@@ -159,8 +163,9 @@ if __name__ == "__main__":
        [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
        [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0],
        [0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0]]'''
-    while(1):
-        grid= read_img('mig2.png')
+    #while(1):
+    if True:
+        grid= read_img('bigmigong.png')
     #生成算法实例对象
         k=Astar(grid)
     #设置路径起点
@@ -171,4 +176,5 @@ if __name__ == "__main__":
     #计算路径
         k.calculate()
     #矩阵绘制显示
-        k.show_mat('Path Output,STEPS='+str(k.steps)+'    COST='+str(k.realcost)+'   Time cost='+str(round((k.end-k.start),3))+'s')
+        k.show_mat('Path Output,STEPS='+str(k.steps)+'    COST='+str(k.realcost)+'   Time cost='+str(round((k.end-k.start),3))+'s',k.path_grid)
+        #k.show_mat('arrivepoints',k.arrive_point)
